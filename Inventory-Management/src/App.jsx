@@ -1,9 +1,14 @@
-import React from 'react'
+import React from 'react';
+import Navbar from './assets/Frontend/Navbar';
+
+
 
 function App() {
   return (
-    <div className='text-3xl font-bold underline'>App</div>
-  )
+    <>
+      <Navbar />
+    </>
+  );
 }
 
-export default App
+export default App; // Make sure this line exists.
