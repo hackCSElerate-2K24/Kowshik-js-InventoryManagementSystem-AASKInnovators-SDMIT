@@ -1,60 +1,77 @@
+// src/components/Navbar.js
 import React, { useState, useEffect } from 'react';
-import { Link } from 'react-router-dom';
-import './Navbar.css'; // Make sure to add the relevant CSS rules in this file.
+import { Link,useNavigate } from 'react-router-dom';
+
 
 function Navbar() {
-  // State to toggle between light and dark mode
   const [isDarkMode, setIsDarkMode] = useState(false);
+  const [isLoggedIn, setIsLoggedIn] = useState(false);
+  const [userRole, setUserRole] = useState(null); // Track whether the user is 'admin' or 'worker'
+  const navigate = useNavigate();
 
-  // Toggle theme mode
+  // Theme toggle function
   const toggleTheme = () => {
     setIsDarkMode(!isDarkMode);
   };
 
-  // Apply the theme to the document body
+  const handleLogout = () => {
+    setIsLoggedIn(false);
+    setUserRole(null);
+    navigate('/');
+  };
+
   useEffect(() => {
     if (isDarkMode) {
-      document.body.classList.add('dark-mode'); // Corresponding CSS class
+      document.body.classList.add('dark');
     } else {
-      document.body.classList.remove('dark-mode');
+      document.body.classList.remove('dark');
     }
   }, [isDarkMode]);
 
-  // State to toggle the dropdown
-  const [isDropdownOpen, setIsDropdownOpen] = useState(false);
-
-  // Toggle the dropdown
-  const toggleDropdown = () => {
-    setIsDropdownOpen(!isDropdownOpen);
-  };
-
   return (
-    <nav className={`navbar ${isDarkMode ? 'navbar-dark' : 'navbar-light'}`}>
-      <div className="navbar-logo">
-        <Link to="/">Inventory Management</Link>
-      </div>
-      <div className="navbar-links">
-        {/* Dropdown for login options */}
-        <div className="dropdown">
-          <button onClick={toggleDropdown} className="navbar-link dropdown-btn">
-            Login
-          </button>
-          {isDropdownOpen && (
-            <div className="dropdown-menu">
-              <Link to="/admin-login" className="dropdown-item">Admin Login</Link>
-              <Link to="/user-login" className="dropdown-item">User Login</Link>
-            </div>
-          )}
+    <nav className="p-4 bg-gray-200 dark:bg-gray-800 shadow-lg">
+      <div className="flex items-center justify-between">
+        <div className="text-2xl font-bold text-gray-900 dark:text-white">
+          <Link to="/">Inventory Management</Link>
         </div>
 
-        <Link to="/user-dashboard" className="navbar-link">
-          User Dashboard
-        </Link>
+        <div className="flex space-x-4">
+          {!isLoggedIn ? (
+            <>
+              <Link
+                to="/admin-login"
+                className="px-4 py-2 text-white bg-blue-600 rounded hover:bg-blue-700"
+              >
+                Admin Login
+              </Link>
+              <Link
+                to="/worker-login"
+                className="px-4 py-2 text-white bg-green-600 rounded hover:bg-green-700"
+              >
+                Worker Login
+              </Link>
+            </>
+          ) : (
+            <>
+              <span className="px-4 py-2 text-gray-900 bg-gray-300 rounded dark:text-white dark:bg-gray-700">
+                {userRole === 'admin' ? 'Admin' : 'Worker'} Dashboard
+              </span>
+              <button
+                onClick={handleLogout}
+                className="px-4 py-2 text-white bg-red-600 rounded hover:bg-red-700"
+              >
+                Logout
+              </button>
+            </>
+          )}
 
-        {/* Theme toggle button */}
-        <button onClick={toggleTheme} className="theme-toggle-btn">
-          {isDarkMode ? 'Light Mode' : 'Dark Mode'}
-        </button>
+          <button
+            onClick={toggleTheme}
+            className="px-4 py-2 text-gray-900 bg-gray-300 rounded hover:bg-gray-400 dark:bg-gray-700 dark:text-white"
+          >
+            {isDarkMode ? 'Light Mode' : 'Dark Mode'}
+          </button>
+        </div>
       </div>
     </nav>
   );

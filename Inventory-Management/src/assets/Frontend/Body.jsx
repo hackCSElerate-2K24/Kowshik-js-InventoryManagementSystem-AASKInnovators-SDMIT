@@ -1,41 +1,16 @@
-// src/components/Body.jsx
-
 import React from 'react';
-import './Body.css';
 
-const Body = () => {
+function Body() {
   return (
-    <div className="body-container">
-      {/* About Us Section */}
-      <section className="about-us">
-        <h2>About Us</h2>
-        <p>
-          Welcome to our website! We are a team dedicated to providing high-quality services and products to our customers. Our mission is to make the world a better place through innovation and creativity.
-        </p>
-        <div className="image-container">
-          {/* Added image here */}
-          <img
-            src="https://media.istockphoto.com/id/1484852942/photo/smart-warehouse-inventory-management-system-concept.jpg?s=612x612&w=0&k=20&c=q5hzpG2i4A7iVLT7sseXdKIsVxClkLJrUlLsZJNIGMs="
-            alt="About Us"
-            className="about-us-image"
-          />
-        </div>
-      </section>
-
-      {/* Contact Us Section */}
-      <section className="contact-us">
-        <h2>Contact Us</h2>
-        <p>
-          We would love to hear from you! Whether you have a question, feedback, or want to collaborate, feel free to reach out to us.
-        </p>
-        <ul>
-          <li>Email: <a href="mailto:info@company.com">AASKInnovators@gmail.com</a></li>
-          <li>Phone: +9141047589</li>
-          <li>Address: 1234 Main Street, Bengaluru, Karnataka</li>
-        </ul>
-      </section>
+    <div className="bg-gradient-to-r from-indigo-500 via-purple-500 to-pink-500 min-h-screen flex flex-col justify-center items-center">
+      <h1 className="text-4xl font-extrabold text-white mb-6 text-center">
+        Welcome to the Inventory Management System
+      </h1>
+      <p className="text-xl text-white opacity-80 text-center px-4 md:px-8">
+        Manage your inventory with ease. Add, update, and view your products seamlessly.
+      </p>
     </div>
   );
-};
+}
 
 export default Body;
