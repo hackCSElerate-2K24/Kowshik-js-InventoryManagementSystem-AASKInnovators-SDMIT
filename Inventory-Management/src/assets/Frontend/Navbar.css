@@ -6,42 +6,34 @@
     justify-content: space-between;
     align-items: center;
     padding: 10px 20px;
-  }
-  
-  .navbar-light {
-    background-color: #f8f9fa;
-    color: #333;
-  }
-  
-  .navbar-dark {
-    background-color: #333;
-    color: #f8f9fa;
-  }
-  
-  .navbar-logo a {
-    font-size: 20px;
+    transition: background-color 0.3s ease;
+}
+
+.navbar-logo a {
+    font-size: 24px;
     text-decoration: none;
-  }
-  
-  .navbar-light .navbar-link {
-    color: #333;
-  }
-  
-  .navbar-dark .navbar-link {
-    color: #f8f9fa;
-  }
-  
-  .navbar-link {
+    font-weight: bold;
+    color: inherit;
+}
+
+.navbar-links {
+    display: flex;
+    align-items: center;
+}
+
+.navbar-link {
     margin-left: 20px;
     text-decoration: none;
     font-size: 16px;
-  }
-  
-  .navbar-link:hover {
+    color: inherit;
+    transition: color 0.3s ease;
+}
+
+.navbar-link:hover {
     color: #4CAF50;
-  }
-  
-  .theme-toggle-btn {
+}
+
+.theme-toggle-btn {
     padding: 5px 10px;
     background: none;
     border: 1px solid currentColor;
@@ -49,14 +41,79 @@
     cursor: pointer;
     color: inherit;
     margin-left: 20px;
-  }
-  
-  .theme-toggle-btn:hover {
+}
+
+.theme-toggle-btn:hover {
     background-color: rgba(0, 0, 0, 0.1);
-  }
-  
-  /* Global dark-mode styles for the body */
-  body.dark-mode {
+}
+
+/* Dropdown Styling */
+.dropdown {
+    position: relative;
+}
+
+.dropdown-btn {
+    background: none;
+    border: none;
+    font-size: 16px;
+    color: inherit;
+    cursor: pointer;
+}
+
+.dropdown-menu {
+    position: absolute;
+    top: 100%;
+    left: 0;
+    background-color: #fff;
+    border-radius: 5px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    z-index: 1000;
+    min-width: 150px;
+    padding: 10px 0;
+}
+
+.dropdown-item {
+    display: block;
+    padding: 10px 20px;
+    color: #333;
+    text-decoration: none;
+}
+
+.dropdown-item:hover {
+    background-color: #f1f1f1;
+    color: #4CAF50;
+}
+
+/* Dark Mode Navbar */
+.navbar-dark {
+    background-color: #333;
+    color: #f8f9fa;
+}
+
+.navbar-dark .navbar-link {
+    color: #f8f9fa;
+}
+
+.navbar-dark .navbar-link:hover {
+    color: #4CAF50;
+}
+
+.navbar-dark .dropdown-menu {
+    background-color: #444;
+    color: #f8f9fa;
+}
+
+.navbar-dark .dropdown-item {
+    color: #f8f9fa;
+}
+
+.navbar-dark .dropdown-item:hover {
+    background-color: #555;
+    color: #4CAF50;
+}
+
+/* Global dark-mode styles for the body */
+body.dark-mode {
     background-color: #121212;
     color: #f8f9fa;
-  }
+}

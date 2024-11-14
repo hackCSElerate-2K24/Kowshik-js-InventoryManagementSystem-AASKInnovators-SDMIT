@@ -20,21 +20,37 @@ function Navbar() {
     }
   }, [isDarkMode]);
 
+  // State to toggle the dropdown
+  const [isDropdownOpen, setIsDropdownOpen] = useState(false);
+
+  // Toggle the dropdown
+  const toggleDropdown = () => {
+    setIsDropdownOpen(!isDropdownOpen);
+  };
+
   return (
     <nav className={`navbar ${isDarkMode ? 'navbar-dark' : 'navbar-light'}`}>
       <div className="navbar-logo">
         <Link to="/">Inventory Management</Link>
       </div>
       <div className="navbar-links">
-        <Link to="/admin-login" className="navbar-link">
-          Admin Login
-        </Link>
-        <Link to="/user-login" className="navbar-link">
-          User Login
-        </Link>
+        {/* Dropdown for login options */}
+        <div className="dropdown">
+          <button onClick={toggleDropdown} className="navbar-link dropdown-btn">
+            Login
+          </button>
+          {isDropdownOpen && (
+            <div className="dropdown-menu">
+              <Link to="/admin-login" className="dropdown-item">Admin Login</Link>
+              <Link to="/user-login" className="dropdown-item">User Login</Link>
+            </div>
+          )}
+        </div>
+
         <Link to="/user-dashboard" className="navbar-link">
           User Dashboard
         </Link>
+
         {/* Theme toggle button */}
         <button onClick={toggleTheme} className="theme-toggle-btn">
           {isDarkMode ? 'Light Mode' : 'Dark Mode'}
