@@ -12,7 +12,6 @@ function AdminDashboard() {
   
   const navigate = useNavigate(); 
 
-  // Fetch products from localStorage when the component loads
   useEffect(() => {
     const storedInventory = localStorage.getItem('inventory');
     
@@ -20,7 +19,6 @@ function AdminDashboard() {
       try {
         const parsedInventory = JSON.parse(storedInventory);
 
-        // Ensure parsed data is an object
         if (typeof parsedInventory === 'object' && parsedInventory !== null) {
           const productArray = Object.keys(parsedInventory).map((key, index) => ({
             id: index + 1, 
@@ -60,13 +58,11 @@ function AdminDashboard() {
       const price = parseFloat(newProduct.price);
       const stock = parseInt(newProduct.stock);
 
-   
       if (price < 0 || stock < 0) {
         alert('Price and Stock values cannot be negative.');
         setNewProduct({ name: '', price: '', stock: '', barcode: '' });
         return;
       }
-
 
       const addedProduct = {
         name: newProduct.name,
@@ -74,23 +70,18 @@ function AdminDashboard() {
         stock: stock,
       };
 
- 
       const updatedProducts = {
         ...JSON.parse(localStorage.getItem('inventory') || '{}'),
         [newProduct.barcode]: addedProduct
       };
 
-      // Update the products in state and localStorage
       setProducts(Object.keys(updatedProducts).map((key, index) => ({
-        id: index + 1,  // Serial number for 'id'
-        barcode: key,   // Barcode will be the key
+        id: index + 1,  
+        barcode: key,   
         ...updatedProducts[key]
       })));
-      
 
       localStorage.setItem('inventory', JSON.stringify(updatedProducts));
-      
-
       setNewProduct({ name: '', price: '', stock: '', barcode: '' });
     } else {
       alert('Please fill in all fields');
@@ -128,14 +119,12 @@ function AdminDashboard() {
   };
 
   const handleLogout = () => {
-
     navigate('/');
   };
 
   const filteredProducts = products.filter((product) =>
     product.name.toLowerCase().includes(searchTerm.toLowerCase())
   );
-
 
   const navigateToScanner = () => {
     navigate('/Scanner-login');
@@ -144,7 +133,6 @@ function AdminDashboard() {
   return (
     <div className="p-6 max-w-screen-xl mx-auto">
       <div className="flex justify-between items-center mb-6">
-       
         <button
           className="bg-blue-500 text-white py-2 px-4 rounded hover:bg-blue-600"
           onClick={navigateToScanner} // Navigate to scanner
@@ -170,7 +158,6 @@ function AdminDashboard() {
         />
       </div>
 
-      {/* Add Product Form */}
       <div className="mb-6 bg-white p-4 rounded-lg shadow-lg">
         <h2 className="text-2xl font-semibold mb-4">Add New Product</h2>
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
@@ -230,7 +217,7 @@ function AdminDashboard() {
           </thead>
           <tbody>
             {filteredProducts.map((product) => (
-              <tr key={product.barcode}>
+              <tr key={product.barcode} className={product.stock < 10 ? 'bg-yellow-100' : ''}>
                 {editingProductId === product.id ? (
                   <>
                     <td className="border border-gray-300 px-4 py-2">{product.id}</td>
@@ -287,6 +274,9 @@ function AdminDashboard() {
                     <td className="border border-gray-300 px-4 py-2">{product.stock}</td>
                     <td className="border border-gray-300 px-4 py-2">{product.barcode}</td>
                     <td className="border border-gray-300 px-4 py-2">
+                      {product.stock < 10 && (
+                        <span className="text-red-500 font-bold">Low Stock</span>
+                      )}
                       <button
                         onClick={() => handleEditClick(product)}
                         className="bg-yellow-500 text-white py-1 px-2 rounded hover:bg-yellow-600"

@@ -1,13 +1,13 @@
-// src/pages/WorkerDashboard.js
 import React, { useState, useEffect } from 'react';
 import Quagga from 'quagga';
 
 function WorkerScanner() {
-  const [productDetails, setProductDetails] = useState(null);
+  const [scannedItems, setScannedItems] = useState([]); // Array to store scanned items
   const [barcode, setBarcode] = useState('');
   const [quantity, setQuantity] = useState('');
-  const [totalPrice, setTotalPrice] = useState(null);
+  const [totalPrice, setTotalPrice] = useState(0); // Total price for all scanned items
   const [scannerActive, setScannerActive] = useState(false);
+  const [productDetails, setProductDetails] = useState(null); // Make sure this is initialized to null
 
   useEffect(() => {
     if (scannerActive) {
@@ -50,7 +50,7 @@ function WorkerScanner() {
     if (product) {
       setProductDetails(product);
     } else {
-      setProductDetails(null);
+      setProductDetails(null); // Clear product details if not found
     }
   };
 
@@ -58,28 +58,65 @@ function WorkerScanner() {
   const handleQuantityChange = (e) => {
     const newQuantity = e.target.value;
     setQuantity(newQuantity);
+  };
 
-    if (productDetails && newQuantity) {
-      setTotalPrice(newQuantity * productDetails.price);
+  // Add or update scanned product in the list
+  const handleScanProduct = () => {
+    if (!productDetails) {
+      alert('No product found. Please scan a valid product.');
+      return;
+    }
+
+    if (quantity > 0) {
+      const newItem = {
+        barcode,
+        name: productDetails.name,
+        price: productDetails.price,
+        quantity: parseInt(quantity, 10),
+      };
+
+      const existingItemIndex = scannedItems.findIndex(item => item.barcode === barcode);
+      if (existingItemIndex > -1) {
+        // Update quantity for the existing item
+        const updatedItems = [...scannedItems];
+        updatedItems[existingItemIndex].quantity += parseInt(quantity, 10);
+        setScannedItems(updatedItems);
+      } else {
+        // Add new item to the scanned items list
+        setScannedItems([...scannedItems, newItem]);
+      }
+
+      setQuantity('');
+      setBarcode('');
     } else {
-      setTotalPrice(null);
+      alert('Invalid quantity.');
     }
   };
 
-  // Decrement stock quantity in localStorage
+  // Decrement stock quantity in localStorage and stop the scanner
   const handleDecrementQuantity = () => {
     const inventory = JSON.parse(localStorage.getItem('inventory')) || {};
 
-    if (inventory[barcode]) {
-      inventory[barcode].stock = Math.max(0, inventory[barcode].stock - parseInt(quantity, 10));
-      localStorage.setItem('inventory', JSON.stringify(inventory));
-      setProductDetails(inventory[barcode]);
-      setQuantity('');
-      setTotalPrice(null);
-    } else {
-      console.error("Product not found in inventory.");
-    }
+    // Decrement stock for each scanned item
+    scannedItems.forEach(item => {
+      if (inventory[item.barcode]) {
+        inventory[item.barcode].stock = Math.max(0, inventory[item.barcode].stock - item.quantity);
+      }
+    });
+
+    localStorage.setItem('inventory', JSON.stringify(inventory));
+
+    // Stop the scanner and reset states
+    setScannerActive(false);
+    setScannedItems([]);
+    setTotalPrice(0);
   };
+
+  // Calculate total price for all scanned items
+  useEffect(() => {
+    const total = scannedItems.reduce((sum, item) => sum + item.price * item.quantity, 0);
+    setTotalPrice(total);
+  }, [scannedItems]);
 
   return (
     <div className="p-6 max-w-lg mx-auto bg-white rounded-lg shadow-md">
@@ -104,7 +141,7 @@ function WorkerScanner() {
         <div className="mt-4">
           <h3 className="text-xl font-semibold text-gray-700">Product Found</h3>
           <p className="text-gray-700">Name: {productDetails.name}</p>
-          <p className="text-gray-700">Price per unit: ${productDetails.price}</p>
+          <p className="text-gray-700">Price per unit: ₹ {productDetails.price}</p>
           <p className="text-gray-700">Current Stock: {productDetails.stock}</p>
           {productDetails.stock < 5 && <p className="text-red-600 font-bold">Low stock alert!</p>}
 
@@ -117,22 +154,39 @@ function WorkerScanner() {
               className="border border-gray-300 p-2 rounded-md mb-2"
             />
             <button
-              onClick={handleDecrementQuantity}
-              className="bg-blue-600 text-white px-4 py-2 rounded-md hover:bg-blue-700"
+              onClick={handleScanProduct}
+              className="bg-blue-600 text-white px-4 py-2 rounded-md hover:bg-blue-700 mb-4"
             >
-              Decrement Stock
+              Add to List
             </button>
           </div>
-
-          {totalPrice !== null && (
-            <p className="text-lg mt-4 font-medium text-gray-800">
-              Total Price for {quantity} units: ${totalPrice}
-            </p>
-          )}
         </div>
       ) : (
-        <p className="text-red-500 mt-4">Product not found. Please scan a valid barcode.</p>
+        <p className="text-red-500 mt-4">No product found.</p>
       )}
+
+      <div className="mt-4">
+        <h3 className="text-xl font-semibold text-gray-700">Scanned Items</h3>
+        <ul>
+          {scannedItems.map((item, index) => (
+            <li key={index} className="flex justify-between">
+              <span>{item.name} (x{item.quantity})</span>
+              <span>₹ {item.price * item.quantity}</span>
+            </li>
+          ))}
+        </ul>
+      </div>
+
+      <div className="mt-4">
+        <h3 className="text-xl font-semibold text-gray-700">Total Price: ₹ {totalPrice}</h3>
+      </div>
+
+      <button
+        onClick={handleDecrementQuantity}
+        className="bg-red-600 text-white px-4 py-2 rounded-md hover:bg-red-700 mt-4"
+      >
+        Generate Bill
+      </button>
     </div>
   );
 }
