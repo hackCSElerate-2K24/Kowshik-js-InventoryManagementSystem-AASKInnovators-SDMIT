@@ -8,13 +8,13 @@ function WorkerLogin() {
 
   const handleSubmit = (e) => {
     e.preventDefault();
-    // Assuming 'worker' as the username and 'worker123' as the password for now
+
     if (username === 'worker' && password === 'worker123') {
       navigate('/worker-dashboard');
     } else {
       alert('Invalid login');
-      setUsername('');  // Clear username field
-      setPassword('');  // Clear password field
+      setUsername(''); 
+      setPassword(''); 
     }
   };
 

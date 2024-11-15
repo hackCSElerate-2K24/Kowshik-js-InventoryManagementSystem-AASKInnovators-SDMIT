@@ -1,23 +1,46 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom'; // Import the useNavigate hook
 import Navbar from './Navbar';
 import Body from './Body';
 
 function AdminDashboard() {
-  const initialProducts = [
-    { id: 1, name: 'Product 1', price: 100, stock: 50, barcode: '123456789' },
-    { id: 2, name: 'Product 2', price: 200, stock: 30, barcode: '987654321' },
-    { id: 3, name: 'Product 3', price: 150, stock: 40, barcode: '456789123' },
-    { id: 4, name: 'Product 4', price: 250, stock: 20, barcode: '654321987' },
-  ];
-
-  const [products, setProducts] = useState(initialProducts);
+  const [products, setProducts] = useState([]);
   const [newProduct, setNewProduct] = useState({ name: '', price: '', stock: '', barcode: '' });
   const [searchTerm, setSearchTerm] = useState('');
   const [editingProductId, setEditingProductId] = useState(null);
   const [editedProduct, setEditedProduct] = useState({});
   
-  const navigate = useNavigate(); // Hook to navigate to other routes
+  const navigate = useNavigate(); 
+
+  // Fetch products from localStorage when the component loads
+  useEffect(() => {
+    const storedInventory = localStorage.getItem('inventory');
+    
+    if (storedInventory) {
+      try {
+        const parsedInventory = JSON.parse(storedInventory);
+
+        // Ensure parsed data is an object
+        if (typeof parsedInventory === 'object' && parsedInventory !== null) {
+          const productArray = Object.keys(parsedInventory).map((key, index) => ({
+            id: index + 1, 
+            barcode: key,   
+            ...parsedInventory[key]
+          }));
+          setProducts(productArray);
+        } else {
+          console.error('Invalid inventory data in localStorage');
+          setProducts([]);
+        }
+      } catch (error) {
+        console.error('Error parsing inventory data from localStorage:', error);
+        setProducts([]);
+      }
+    } else {
+      console.log('No inventory found in localStorage');
+      setProducts([]);
+    }
+  }, []);
 
   const handleInputChange = (e) => {
     const { name, value } = e.target;
@@ -37,22 +60,37 @@ function AdminDashboard() {
       const price = parseFloat(newProduct.price);
       const stock = parseInt(newProduct.stock);
 
-      // Validate if price or stock is negative
+   
       if (price < 0 || stock < 0) {
         alert('Price and Stock values cannot be negative.');
         setNewProduct({ name: '', price: '', stock: '', barcode: '' });
         return;
       }
 
-      const newId = products.length + 1;
+
       const addedProduct = {
-        id: newId,
         name: newProduct.name,
         price: price,
         stock: stock,
-        barcode: newProduct.barcode,
       };
-      setProducts((prevState) => [...prevState, addedProduct]);
+
+ 
+      const updatedProducts = {
+        ...JSON.parse(localStorage.getItem('inventory') || '{}'),
+        [newProduct.barcode]: addedProduct
+      };
+
+      // Update the products in state and localStorage
+      setProducts(Object.keys(updatedProducts).map((key, index) => ({
+        id: index + 1,  // Serial number for 'id'
+        barcode: key,   // Barcode will be the key
+        ...updatedProducts[key]
+      })));
+      
+
+      localStorage.setItem('inventory', JSON.stringify(updatedProducts));
+      
+
       setNewProduct({ name: '', price: '', stock: '', barcode: '' });
     } else {
       alert('Please fill in all fields');
@@ -77,13 +115,20 @@ function AdminDashboard() {
   };
 
   const handleSaveEdit = (id) => {
-    setProducts(products.map((prod) => (prod.id === id ? editedProduct : prod)));
+    const updatedProducts = products.map((prod) =>
+      prod.id === id ? editedProduct : prod
+    );
+    setProducts(updatedProducts);
+    const updatedProductsObj = updatedProducts.reduce((obj, prod) => {
+      obj[prod.barcode] = { name: prod.name, price: prod.price, stock: prod.stock };
+      return obj;
+    }, {});
+    localStorage.setItem('inventory', JSON.stringify(updatedProductsObj));
     setEditingProductId(null);
   };
 
   const handleLogout = () => {
-    // Here, handle the logout functionality, such as clearing session or token
-    // For now, we are redirecting the user to the admin login page
+
     navigate('/');
   };
 
@@ -91,7 +136,7 @@ function AdminDashboard() {
     product.name.toLowerCase().includes(searchTerm.toLowerCase())
   );
 
-  // Function to navigate to the scanner page
+
   const navigateToScanner = () => {
     navigate('/Scanner-login');
   };
@@ -99,18 +144,14 @@ function AdminDashboard() {
   return (
     <div className="p-6 max-w-screen-xl mx-auto">
       <div className="flex justify-between items-center mb-6">
-        {/* Product Scanner Button */}
+       
         <button
           className="bg-blue-500 text-white py-2 px-4 rounded hover:bg-blue-600"
           onClick={navigateToScanner} // Navigate to scanner
         >
           Product Scanner
         </button>
-
-        {/* Admin Dashboard Title */}
         <h1 className="text-3xl font-extrabold text-center">Admin Dashboard</h1>
-
-        {/* Logout Button */}
         <button
           onClick={handleLogout}
           className="bg-red-500 text-white py-2 px-4 rounded hover:bg-red-600"
@@ -119,7 +160,6 @@ function AdminDashboard() {
         </button>
       </div>
 
-      {/* Search Bar */}
       <div className="mb-4 flex justify-center">
         <input
           type="text"
@@ -175,7 +215,6 @@ function AdminDashboard() {
         </div>
       </div>
 
-      {/* Products List */}
       <h2 className="text-2xl font-semibold mb-4">Product List</h2>
       <div className="overflow-x-auto bg-white shadow-lg rounded-lg">
         <table className="min-w-full table-auto text-center border-collapse border border-gray-300">
@@ -191,7 +230,7 @@ function AdminDashboard() {
           </thead>
           <tbody>
             {filteredProducts.map((product) => (
-              <tr key={product.id} className="hover:bg-gray-100">
+              <tr key={product.barcode}>
                 {editingProductId === product.id ? (
                   <>
                     <td className="border border-gray-300 px-4 py-2">{product.id}</td>

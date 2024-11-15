@@ -1,4 +1,4 @@
-// src/pages/Scanner.js
+
 import React, { useState, useEffect } from 'react';
 import Quagga from 'quagga';
 
@@ -16,7 +16,6 @@ function Scanner() {
       return;
     }
 
-    // Initialize Quagga
     Quagga.init(
       {
         inputStream: {
@@ -37,7 +36,6 @@ function Scanner() {
       }
     );
 
-    // Detect barcode and fetch product details
     Quagga.onDetected((result) => {
       const detectedBarcode = result.codeResult.code;
       setBarcode(detectedBarcode);
@@ -47,7 +45,7 @@ function Scanner() {
     return () => Quagga.stop();
   }, []);
 
-  // Fetch product details from localStorage based on barcode
+
   const fetchProductInfo = (barcode) => {
     try {
       const inventory = JSON.parse(localStorage.getItem('inventory')) || {};
@@ -62,12 +60,12 @@ function Scanner() {
     }
   };
 
-  // Handle quantity input change
+
   const handleQuantityChange = (e) => {
     setQuantity(e.target.value);
   };
 
-  // Update product quantity in localStorage
+
   const handleUpdateQuantity = () => {
     if (isNaN(quantity) || quantity <= 0) {
       console.error('Invalid quantity.');
@@ -84,13 +82,13 @@ function Scanner() {
     }
   };
 
-  // Handle new item form input changes
+
   const handleAddItemChange = (e) => {
     const { name, value } = e.target;
     setNewItem((prev) => ({ ...prev, [name]: value }));
   };
 
-  // Handle new item form submission
+
   const handleAddItemSubmit = (e) => {
     e.preventDefault();
     if (!barcode) {

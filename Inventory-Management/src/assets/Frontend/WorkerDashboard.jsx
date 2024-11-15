@@ -5,7 +5,6 @@ function WorkerDashboard() {
   const [products, setProducts] = useState([]);
   const navigate = useNavigate();
 
-  // Fetch products from localStorage when the component loads
   useEffect(() => {
     const storedInventory = localStorage.getItem('inventory');
     
@@ -13,9 +12,8 @@ function WorkerDashboard() {
       try {
         const parsedInventory = JSON.parse(storedInventory);
 
-        // Ensure parsed data is an object
         if (typeof parsedInventory === 'object' && parsedInventory !== null) {
-          // Convert object to array of products
+
           const productArray = Object.values(parsedInventory);
           setProducts(productArray);
         } else {

@@ -9,7 +9,7 @@ function Navbar() {
   const [userRole, setUserRole] = useState(null); // Track whether the user is 'admin' or 'worker'
   const navigate = useNavigate();
 
-  // Theme toggle function
+
   const toggleTheme = () => {
     setIsDarkMode(!isDarkMode);
   };
