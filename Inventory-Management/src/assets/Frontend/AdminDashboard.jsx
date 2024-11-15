@@ -1,4 +1,7 @@
 import React, { useState } from 'react';
+import { useNavigate } from 'react-router-dom'; // Import the useNavigate hook
+import Navbar from './Navbar';
+import Body from './Body';
 
 function AdminDashboard() {
   const initialProducts = [
@@ -13,6 +16,8 @@ function AdminDashboard() {
   const [searchTerm, setSearchTerm] = useState('');
   const [editingProductId, setEditingProductId] = useState(null);
   const [editedProduct, setEditedProduct] = useState({});
+  
+  const navigate = useNavigate(); // Hook to navigate to other routes
 
   const handleInputChange = (e) => {
     const { name, value } = e.target;
@@ -31,16 +36,14 @@ function AdminDashboard() {
     ) {
       const price = parseFloat(newProduct.price);
       const stock = parseInt(newProduct.stock);
-  
+
       // Validate if price or stock is negative
       if (price < 0 || stock < 0) {
         alert('Price and Stock values cannot be negative.');
-        
-        // Reset the input fields after showing the alert
         setNewProduct({ name: '', price: '', stock: '', barcode: '' });
         return;
       }
-  
+
       const newId = products.length + 1;
       const addedProduct = {
         id: newId,
@@ -55,7 +58,6 @@ function AdminDashboard() {
       alert('Please fill in all fields');
     }
   };
-  
 
   const handleSearchChange = (e) => {
     setSearchTerm(e.target.value);
@@ -79,13 +81,43 @@ function AdminDashboard() {
     setEditingProductId(null);
   };
 
+  const handleLogout = () => {
+    // Here, handle the logout functionality, such as clearing session or token
+    // For now, we are redirecting the user to the admin login page
+    navigate('/');
+  };
+
   const filteredProducts = products.filter((product) =>
     product.name.toLowerCase().includes(searchTerm.toLowerCase())
   );
 
+  // Function to navigate to the scanner page
+  const navigateToScanner = () => {
+    navigate('/Scanner-login');
+  };
+
   return (
     <div className="p-6 max-w-screen-xl mx-auto">
-      <h1 className="text-3xl font-extrabold mb-6 text-center">Admin Dashboard</h1>
+      <div className="flex justify-between items-center mb-6">
+        {/* Product Scanner Button */}
+        <button
+          className="bg-blue-500 text-white py-2 px-4 rounded hover:bg-blue-600"
+          onClick={navigateToScanner} // Navigate to scanner
+        >
+          Product Scanner
+        </button>
+
+        {/* Admin Dashboard Title */}
+        <h1 className="text-3xl font-extrabold text-center">Admin Dashboard</h1>
+
+        {/* Logout Button */}
+        <button
+          onClick={handleLogout}
+          className="bg-red-500 text-white py-2 px-4 rounded hover:bg-red-600"
+        >
+          Logout
+        </button>
+      </div>
 
       {/* Search Bar */}
       <div className="mb-4 flex justify-center">
@@ -202,7 +234,7 @@ function AdminDashboard() {
                     <td className="border border-gray-300 px-4 py-2">
                       <button
                         onClick={() => handleSaveEdit(product.id)}
-                        className="bg-green-500 text-white p-2 rounded"
+                        className="bg-green-500 text-white py-1 px-2 rounded hover:bg-green-600"
                       >
                         Save
                       </button>
@@ -218,7 +250,7 @@ function AdminDashboard() {
                     <td className="border border-gray-300 px-4 py-2">
                       <button
                         onClick={() => handleEditClick(product)}
-                        className="bg-yellow-500 text-white p-2 rounded mr-2"
+                        className="bg-yellow-500 text-white py-1 px-2 rounded hover:bg-yellow-600"
                       >
                         Edit
                       </button>
